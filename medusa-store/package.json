@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "medusa-store",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -10,19 +10,19 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@medusajs/medusa-js": "^1.1.1",
-    "@react-native-community/masked-view": "^0.1.11",
+    "@expo/vector-icons": "^12.0.0",
+    "axios": "^0.27.2",
     "expo": "~44.0.0",
     "expo-status-bar": "~1.2.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
     "react-native-gesture-handler": "~2.1.0",
-    "react-native-paper": "^4.12.1",
     "react-native-reanimated": "~2.3.1",
     "react-native-router-flux": "^4.3.1",
-    "react-native-safe-area-context": "^4.2.5",
+    "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
+    "react-native-svg": "12.1.1",
     "react-native-web": "0.17.1",
     "rn-responsive-screen": "^1.1.9"
   },

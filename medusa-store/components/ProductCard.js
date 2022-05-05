@@ -16,7 +16,7 @@ export default function ProductCard({ key, product }) {
       <Text style={styles.category}>{product.handle}</Text>
       <View style={styles.priceContainer}>
         <Text style={styles.price}>
-          ${product.variants[0].prices[1].amount}
+          ${product.variants[0].prices[1].amount / 100}
         </Text>
 
         <Button title="BUY" />
@@ -42,8 +42,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   image: {
-    width: widthToDp(40),
+    // width: widthToDp(40),
     height: heightToDp(40),
+    borderRadius: 7,
+    marginBottom: heightToDp(2),
   },
   title: {
     fontSize: widthToDp(3.7),

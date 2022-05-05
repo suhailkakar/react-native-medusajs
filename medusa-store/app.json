@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "medusa-store",
+    "slug": "medusa-store",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

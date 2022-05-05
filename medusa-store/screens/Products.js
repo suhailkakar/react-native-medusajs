@@ -1,14 +1,14 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import ProductCard from "../components/ProductCard";
 import { widthToDp } from "rn-responsive-screen";
-import { createClient } from "../utils/client";
 import axios from "axios";
+import Header from "../components/Header";
+import { Actions } from "react-native-router-flux";
 export default function Products() {
   const [products, setProducts] = useState([]);
 
-  async function fetchProducts() {
+  function fetchProducts() {
     axios.get("http://localhost:9000/store/products").then((res) => {
       setProducts(res.data.products);
     });
@@ -19,21 +19,27 @@ export default function Products() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <Header title="Medusa's Store" />
       <ScrollView>
         <View style={styles.products}>
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <TouchableOpacity
+              onPress={() => Actions.productsInfo({ productId: product.id })}
+            >
+              <ProductCard key={product.id} product={product} />
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 50,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
