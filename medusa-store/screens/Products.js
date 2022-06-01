@@ -5,11 +5,13 @@ import { widthToDp } from "rn-responsive-screen";
 import axios from "axios";
 import Header from "../components/Header";
 import { Actions } from "react-native-router-flux";
+import baseURL from "../constants/url";
+
 export default function Products() {
   const [products, setProducts] = useState([]);
 
   function fetchProducts() {
-    axios.get("http://localhost:9000/store/products").then((res) => {
+    axios.get(`${baseURL}/store/products`).then((res) => {
       setProducts(res.data.products);
     });
   }
@@ -25,9 +27,10 @@ export default function Products() {
         <View style={styles.products}>
           {products.map((product) => (
             <TouchableOpacity
-              onPress={() => Actions.productsInfo({ productId: product.id })}
+              key={product.id}
+              onPress={() => Actions.ProductInfo({ productId: product.id })}
             >
-              <ProductCard key={product.id} product={product} />
+              <ProductCard product={product} />
             </TouchableOpacity>
           ))}
         </View>

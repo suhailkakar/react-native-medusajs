@@ -2,21 +2,20 @@ import { View, Text, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { height, heightToDp } from "rn-responsive-screen";
 
-export default function metaInfo({ product }) {
+export default function MetaInfo({ product }) {
   const [activeSize, setActiveSize] = useState(0);
-
   return (
     <View style={styles.container}>
       <View style={styles.row}>
         <Text style={styles.title}>{product.title}</Text>
         <View>
           <Text style={styles.price}>
-            {product?.variants[0]?.prices[1].amount / 100}
+            {product.variants[0].prices[1].amount / 100}
           </Text>
           <Text style={styles.star}>⭐⭐⭐</Text>
         </View>
       </View>
-      <Text style={styles.heading}>Avalible Sizes</Text>
+      <Text style={styles.heading}>Available Sizes</Text>
       <View style={styles.row}>
         {product.options[0].values.map((size, index) => (
           <Text

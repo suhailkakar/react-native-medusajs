@@ -46,11 +46,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: widthToDp(-10),
-    // width: widthToDp(60),
   },
   imageContainer: {
     backgroundColor: "#F7F6FB",
-    // backgroundColor: "#000",
     paddingBottom: widthToDp(10),
   },
   imagePreview: {

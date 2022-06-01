@@ -1,5 +1,3 @@
-import createCache from "@emotion/cache"
-import { CacheProvider } from "@emotion/react"
 import clsx from "clsx"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import Select, {
@@ -29,6 +27,7 @@ type MultiSelectProps = InputHeaderProps & {
   required?: boolean
   name?: string
   className?: string
+  fullWidth?: boolean
   // Multiselect props
   placeholder?: string
   isMultiSelect?: boolean
@@ -144,6 +143,47 @@ const ClearIndicator = ({ ...props }: ClearIndicatorProps) => {
   )
 }
 
+const CheckboxAdornment = ({ isSelected }) => {
+  return (
+    <div
+      className={clsx(
+        `w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base`,
+        {
+          "bg-violet-60": isSelected,
+        }
+      )}
+    >
+      <span className="self-center">
+        {isSelected && <CheckIcon size={16} />}
+      </span>
+    </div>
+  )
+}
+
+const RadioAdornment = ({ isSelected }) => {
+  return (
+    <div
+      className={clsx(
+        "radio-outer-ring outline-0",
+        "shrink-0 w-[20px] h-[20px] rounded-circle",
+        {
+          "shadow-[0_0_0_1px] shadow-[#D1D5DB]": !isSelected,
+          "shadow-[0_0_0_2px] shadow-violet-60": isSelected,
+        }
+      )}
+    >
+      {isSelected && (
+        <div
+          className={clsx(
+            "group flex items-center justify-center w-full h-full relative",
+            "after:absolute after:inset-0 after:m-auto after:block after:w-[12px] after:h-[12px] after:bg-violet-60 after:rounded-circle"
+          )}
+        />
+      )}
+    </div>
+  )
+}
+
 const Option = ({ className, ...props }: OptionProps) => {
   return (
     <components.Option
@@ -156,15 +196,11 @@ const Option = ({ className, ...props }: OptionProps) => {
         <div className="items-center h-full flex">
           {props.data?.value !== "all" && props.data?.label !== "Select All" ? (
             <>
-              <div
-                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
-                  props.isSelected && "bg-violet-60"
-                }`}
-              >
-                <span className="self-center">
-                  {props.isSelected && <CheckIcon size={16} />}
-                </span>
-              </div>
+              {props.isMulti ? (
+                <CheckboxAdornment {...props} />
+              ) : (
+                <RadioAdornment {...props} />
+              )}
               <span className="ml-3 text-grey-90 inter-base-regular">
                 {props.data.label}
               </span>
@@ -185,6 +221,7 @@ const SSelect = React.forwardRef(
     {
       label,
       name,
+      fullWidth = false,
       required,
       value,
       onChange,
@@ -261,7 +298,12 @@ const SSelect = React.forwardRef(
     }, [isFocussed])
 
     return (
-      <div ref={containerRef}>
+      <div
+        ref={containerRef}
+        className={clsx({
+          "w-full": fullWidth,
+        })}
+      >
         <InputContainer
           key={name}
           onFocusLost={() => {
@@ -281,72 +323,63 @@ const SSelect = React.forwardRef(
               <ArrowDownIcon size={16} />
             </div>
           )}
-          <CacheProvider
-            value={createCache({
-              key: "my-select-cache",
-              prepend: true,
-            })}
-          >
-            {
-              <GetSelect
-                isCreatable={isCreatable}
-                searchBackend={filterOptions}
-                options={
-                  hasSelectAll && isMultiSelect
-                    ? [{ value: "all", label: "Select All" }, ...options]
-                    : options
+          {
+            <GetSelect
+              isCreatable={isCreatable}
+              searchBackend={filterOptions}
+              options={
+                hasSelectAll && isMultiSelect
+                  ? [{ value: "all", label: "Select All" }, ...options]
+                  : options
+              }
+              ref={selectRef}
+              value={value}
+              isMulti={isMultiSelect}
+              openMenuOnFocus={isMultiSelect}
+              isSearchable={enableSearch}
+              isClearable={clearSelected}
+              onChange={onClickOption}
+              onMenuOpen={() => {
+                setIsFocussed(true)
+              }}
+              onMenuClose={() => {
+                setScrollBlocked(true)
+                setIsFocussed(false)
+              }}
+              closeMenuOnScroll={(e) => {
+                if (
+                  !scrollBlocked &&
+                  e.target?.contains(containerRef.current) &&
+                  e.target !== document
+                ) {
+                  return true
                 }
-                ref={selectRef}
-                value={value}
-                isMulti={isMultiSelect}
-                openMenuOnFocus={isMultiSelect}
-                isSearchable={enableSearch}
-                isClearable={clearSelected}
-                onChange={onClickOption}
-                onMenuOpen={() => {
-                  setIsFocussed(true)
-                }}
-                onMenuClose={() => {
-                  setScrollBlocked(true)
-                  setIsFocussed(false)
-                }}
-                closeMenuOnScroll={(e) => {
-                  if (
-                    !scrollBlocked &&
-                    e.target?.contains(containerRef.current) &&
-                    e.target !== document
-                  ) {
-                    return true
-                  }
-                }}
-                closeMenuOnSelect={!isMultiSelect}
-                blurInputOnSelect={!isMultiSelect}
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
-                hideSelectedOptions={false}
-                menuPortalTarget={
-                  portalRef?.current?.lastChild || document.body
-                }
-                menuPlacement="auto"
-                backspaceRemovesValue={false}
-                classNamePrefix="react-select"
-                placeholder={placeholder}
-                className="react-select-container"
-                onCreateOption={handleOnCreateOption}
-                components={{
-                  DropdownIndicator: () => null,
-                  IndicatorSeparator: () => null,
-                  MultiValueRemove: () => null,
-                  Placeholder,
-                  MultiValueLabel,
-                  Option,
-                  Input,
-                  Menu,
-                  SingleValue,
-                  ClearIndicator,
-                }}
-              />
-            }
-          </CacheProvider>
+              }}
+              closeMenuOnSelect={!isMultiSelect}
+              blurInputOnSelect={!isMultiSelect}
+              styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
+              hideSelectedOptions={false}
+              menuPortalTarget={portalRef?.current?.lastChild || document.body}
+              menuPlacement="auto"
+              backspaceRemovesValue={false}
+              classNamePrefix="react-select"
+              placeholder={placeholder}
+              className="react-select-container"
+              onCreateOption={handleOnCreateOption}
+              components={{
+                DropdownIndicator: () => null,
+                IndicatorSeparator: () => null,
+                MultiValueRemove: () => null,
+                Placeholder,
+                MultiValueLabel,
+                Option,
+                Input,
+                Menu,
+                SingleValue,
+                ClearIndicator,
+              }}
+            />
+          }
           {isFocussed && enableSearch && <div className="w-full h-5" />}
         </InputContainer>
       </div>

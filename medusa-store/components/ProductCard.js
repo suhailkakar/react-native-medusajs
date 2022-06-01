@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   image: {
-    // width: widthToDp(40),
     height: heightToDp(40),
     borderRadius: 7,
     marginBottom: heightToDp(2),
