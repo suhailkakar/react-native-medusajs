@@ -1,13 +1,13 @@
 import { View, Image, StyleSheet, Text } from "react-native";
 import React from "react";
+import { widthToDp } from "rn-responsive-screen";
 
 export default function Header({ title }) {
   return (
     <View style={styles.container}>
       <Image
         source={{
-          uri:
-            "https://user-images.githubusercontent.com/7554214/153162406-bf8fd16f-aa98-4604-b87b-e13ab4baf604.png",
+          uri: "https://user-images.githubusercontent.com/7554214/153162406-bf8fd16f-aa98-4604-b87b-e13ab4baf604.png",
         }}
         style={styles.logo}
       />
@@ -18,8 +18,9 @@ export default function Header({ title }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "center",
+    width: widthToDp(100),
     marginBottom: 10,
   },
   title: {

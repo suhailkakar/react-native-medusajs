@@ -6,6 +6,8 @@ import axios from "axios";
 import Header from "../components/Header";
 import { Actions } from "react-native-router-flux";
 import baseURL from "../constants/url";
+import Button from "../components/Button";
+import { Feather } from "@expo/vector-icons";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -35,6 +37,14 @@ export default function Products() {
           ))}
         </View>
       </ScrollView>
+      <View style={styles.addToCart}>
+        <Feather
+          name="shopping-cart"
+          size={24}
+          color="white"
+          onPress={() => Actions.cart()}
+        />
+      </View>
     </View>
   );
 }
@@ -54,5 +64,17 @@ const styles = StyleSheet.create({
     width: widthToDp(100),
     paddingHorizontal: widthToDp(4),
     justifyContent: "space-between",
+  },
+  addToCart: {
+    position: "absolute",
+    bottom: 30,
+    right: 10,
+    backgroundColor: "#C37AFF",
+    width: widthToDp(12),
+    height: widthToDp(12),
+    borderRadius: widthToDp(10),
+    alignItems: "center",
+    padding: widthToDp(2),
+    justifyContent: "center",
   },
 });

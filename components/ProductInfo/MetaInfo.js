@@ -1,9 +1,30 @@
 import { View, Text, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { height, heightToDp } from "rn-responsive-screen";
-
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Button from "../Button";
+import axios from "axios";
+import baseURL from "../../constants/url";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function MetaInfo({ product }) {
   const [activeSize, setActiveSize] = useState(0);
+
+  const addToCart = async () => {
+    const cartId = await AsyncStorage.getItem("cart_id");
+
+    axios
+      .post(baseURL + "/store/carts/" + cartId + "/line-items", {
+        variant_id: product.variants[0].id,
+        quantity: 1,
+      })
+      .then(({ data }) => {
+        alert(`Item ${product.title} added to cart`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -18,23 +39,23 @@ export default function MetaInfo({ product }) {
       <Text style={styles.heading}>Available Sizes</Text>
       <View style={styles.row}>
         {product.options[0].values.map((size, index) => (
-          <Text
-            onPress={() => {
-              setActiveSize(index);
-            }}
-            style={[
-              styles.sizeTag,
-              {
-                borderWidth: activeSize === index ? 3 : 0,
-              },
-            ]}
-          >
-            {size.value}
-          </Text>
+          <TouchableOpacity onPress={() => setActiveSize(index)}>
+            <Text
+              style={[
+                styles.sizeTag,
+                {
+                  borderWidth: activeSize === index ? 3 : 0,
+                },
+              ]}
+            >
+              {size.value}
+            </Text>
+          </TouchableOpacity>
         ))}
       </View>
       <Text style={styles.heading}>Description</Text>
       <Text style={styles.description}>{product.description}</Text>
+      <Button onPress={addToCart} title="Add to Cart" large={true} />
     </View>
   );
 }
