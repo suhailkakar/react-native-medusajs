@@ -37,19 +37,7 @@ export default function Cart() {
       <ScrollView contentContainerStyle={styles.container}>
         {/* Using the reusable header component */}
         <Header title="My Cart" />
-        {/* Using the Toast component which we created earlier */}
-        <Toast
-          message={
-            // If the cart is empty, display the message "Your cart is empty"
-            // else display the message "You have n items in your cart" where n
-            // is the number of items in the cart
-            cart?.items?.length > 0
-              ? `You have ${cart?.items.length} ${
-                  cart?.items.length > 1 ? "items" : "item"
-                } in your cart`
-              : "Your cart is empty"
-          }
-        />
+
         {/* Mapping the products into the Cart component */}
         {cart?.items?.map((product) => (
           <CartItem product={product} />

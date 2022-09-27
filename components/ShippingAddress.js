@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TextInput } from "react-native";
 import React, { useState } from "react";
 import { heightToDp } from "rn-responsive-screen";
 
-export default function ShippingAddress({ onChange, onChangeEmail }) {
+export default function ShippingAddress({ onChange }) {
   // Passing onChange as a prop
 
   // Declaring a few states to store the user's input
@@ -58,13 +58,7 @@ export default function ShippingAddress({ onChange, onChangeEmail }) {
         placeholder="Last Name"
         style={styles.input}
       />
-      <TextInput
-        onChangeText={(e) => {
-          onChangeEmail(e);
-        }}
-        placeholder="Email"
-        style={styles.input}
-      />
+      <TextInput placeholder="Email" style={styles.input} />
       <TextInput
         onChangeText={(e) => {
           setAddressLine1(e);

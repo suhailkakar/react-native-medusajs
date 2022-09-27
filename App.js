@@ -8,7 +8,8 @@ import Cart from "./screens/Cart";
 import Checkout from "./screens/Checkout";
 import { Provider as PaperProvider } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { publishable_key } from "./constants/stripe";
+import { StripeProvider } from "@stripe/stripe-react-native";
 export default function App() {
   const getCartId = () => {
     axios.post(`${baseURL}/store/carts`).then((res) => {
@@ -28,15 +29,17 @@ export default function App() {
   }, []);
 
   return (
-    <PaperProvider>
-      <Router>
-        <Stack key="root">
-          <Scene key="products" component={Products} hideNavBar />
-          <Scene key="ProductInfo" component={ProductInfo} hideNavBar />
-          <Scene key="cart" component={Cart} hideNavBar />
-          <Scene key="checkout" component={Checkout} hideNavBar />
-        </Stack>
-      </Router>
-    </PaperProvider>
+    <StripeProvider publishableKey={publishable_key}>
+      <PaperProvider>
+        <Router>
+          <Stack key="root">
+            <Scene key="products" component={Products} hideNavBar />
+            <Scene key="ProductInfo" component={ProductInfo} hideNavBar />
+            <Scene key="cart" component={Cart} hideNavBar />
+            <Scene key="checkout" component={Checkout} hideNavBar />
+          </Stack>
+        </Router>
+      </PaperProvider>
+    </StripeProvider>
   );
 }

@@ -11,86 +11,49 @@ import ShippingAddress from "../components/ShippingAddress";
 import Payment from "../components/Payment";
 import RadioButton from "../components/RadioButton";
 import { secret_key, publishable_key } from "../constants/stripe";
+import { CardField, useStripe } from "@stripe/stripe-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Checkout({ cart }) {
   const [paymentInfo, setPaymentInfo] = useState({});
   const [shippingAddress, setShippingAddress] = useState({});
   const [shippingOptions, setShippingOptions] = useState([]);
   const [selectedShippingOption, setSelectedShippingOption] = useState("");
+  const [paymentSession, setPaymentSession] = useState({});
+
+  const { confirmPayment } = useStripe();
 
   const handlePaymentInputChange = (card) => {
-    setPaymentInfo(card.values);
+    setPaymentInfo(card);
   };
 
   const handleAddressInputChange = (address) => {
     setShippingAddress(address);
   };
 
-  const createTokenId = async () => {
-    // Creating a token id
-    let card = {
-      "card[number]": paymentInfo.number.replace(/ /g, ""),
-      "card[exp_month]": paymentInfo.expiry.split("/")[0],
-      "card[exp_year]": paymentInfo.expiry.split("/")[1],
-      "card[cvc]": paymentInfo.cvc,
-    };
-    // Sending a post request to the stripe api to create a token id
-    return axios
-      .post(
-        "https://api.stripe.com/v1/tokens",
-        Object.keys(card)
-          .map((key) => key + "=" + card[key])
-          .join("&"),
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Bearer ${publishable_key}`,
-          },
-        }
-      )
-      .then((res) => {
-        // Returning the token id
-        return res.data.id;
-      })
-      .catch((err) => {
-        console.log(err.response);
-      });
-  };
-
   const handlePayment = async () => {
-    const card = {
-      amount: Number(cart?.total),
-      currency: "eur",
-      source: await createTokenId(), // Creating a token id
-      description: "User payment",
-    };
+    const clientSecret = paymentSession.client_secret;
 
-    // Sending the card object to the Stripe API
-    axios
-      .post(
-        `https://api.stripe.com/v1/charges`,
-        Object.keys(card)
-          .map((key) => key + "=" + card[key])
-          .join("&"),
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Bearer ${secret_key}`,
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data.status == "succeeded") {
-          // Showing a success message to the user
-          alert("Payment successful");
-        }
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err.response.data);
-      });
+    // TODO: Update the object with proper values from the user's input
+    const billingDetails = {
+      email: "email@stripe.com",
+      phone: "+48888000888",
+      addressCity: "Houston",
+      addressCountry: "US",
+      addressLine1: "1459  Circle Drive",
+      addressLine2: "Texas",
+      addressPostalCode: "77063",
+    };
+    const { error, paymentIntent } = await confirmPayment(clientSecret, {
+      type: "Card",
+      billingDetails,
+    });
+    if (error) {
+      console.log(error);
+    }
+    if (paymentIntent) {
+      console.log(paymentIntent);
+    }
   };
 
   // Calling the API when user presses the "Place Order" button
@@ -99,7 +62,7 @@ export default function Checkout({ cart }) {
     let cart_id = await AsyncStorage.getItem("cart_id");
     // Post shipping address to server
     axios
-      .post(`${baseURL}/store/carts/${cartId}`, {
+      .post(`${baseURL}/store/carts/${cart_id}`, {
         shipping_address: shippingAddress,
       })
       .then(({ data }) => {
@@ -124,6 +87,7 @@ export default function Checkout({ cart }) {
       .get(`${baseURL}/store/shipping-options/${cart_id}`)
       .then(({ data }) => {
         // Set shipping options to state
+        console.log(data);
         setShippingOptions(data.shipping_options);
         // Initializing payment session
         InitializePaymentSessions();
@@ -139,7 +103,8 @@ export default function Checkout({ cart }) {
     axios
       .post(`${baseURL}/store/carts/${cart_id}/payment-sessions`)
       .then(({ data }) => {
-        console.log(data.cart.payment_session);
+        console.log("session", data.cart.payment_sessions[0]);
+        setPaymentSession(data.cart.payment_sessions[0]);
       });
   };
 
@@ -158,7 +123,27 @@ export default function Checkout({ cart }) {
 
         <View style={styles.payment}>
           <Text style={styles.title}>Payment</Text>
-          <Payment onChange={handlePaymentInputChange} />
+          <CardField
+            postalCodeEnabled={false}
+            placeholders={{
+              number: "4242 4242 4242 4242",
+            }}
+            cardStyle={{
+              backgroundColor: "#FFFFFF",
+              textColor: "#000000",
+            }}
+            style={{
+              width: "100%",
+              height: 50,
+              marginVertical: 30,
+            }}
+            onCardChange={(cardDetails) => {
+              handlePaymentInputChange(cardDetails);
+            }}
+            onFocus={(focusedField) => {
+              console.log("focusField", focusedField);
+            }}
+          />
         </View>
         <View style={styles.shipping}>
           <Text style={styles.title}>Shipping Options</Text>
