@@ -13,6 +13,7 @@ import RadioButton from "../components/RadioButton";
 import { secret_key, publishable_key } from "../constants/stripe";
 import { CardField, useStripe } from "@stripe/stripe-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Actions } from "react-native-router-flux";
 
 export default function Checkout({ cart }) {
   const [paymentInfo, setPaymentInfo] = useState({});
@@ -34,26 +35,41 @@ export default function Checkout({ cart }) {
   const handlePayment = async () => {
     const clientSecret = paymentSession.client_secret;
 
-    // TODO: Update the object with proper values from the user's input
     const billingDetails = {
-      email: "email@stripe.com",
-      phone: "+48888000888",
-      addressCity: "Houston",
-      addressCountry: "US",
-      addressLine1: "1459  Circle Drive",
-      addressLine2: "Texas",
-      addressPostalCode: "77063",
+      email: shippingAddress.email,
+      phone: shippingAddress.phone,
+      addressCity: shippingAddress.city,
+      addressCountry: shippingAddress.country,
+      addressLine1: shippingAddress.address_1,
+      addressLine2: shippingAddress.address_2,
+      addressPostalCode: shippingAddress.postalCode,
     };
     const { error, paymentIntent } = await confirmPayment(clientSecret, {
       type: "Card",
       billingDetails,
     });
     if (error) {
-      console.log(error);
+      alert("Payment failed", error);
     }
     if (paymentIntent) {
-      console.log(paymentIntent);
+      alert("Payment successful");
     }
+    // Calling the complete cart function to empty the cart and redirect to the home screen
+    completeCart();
+  };
+
+  const completeCart = async () => {
+    const cartId = await AsyncStorage.getItem("cart_id");
+
+    // Sending a request to the server to empty the cart
+    axios
+      .post(`${baseURL}/store/carts/${cartId}/complete`)
+      .then(async (res) => {
+        // Removing the cart_id from the local storage
+        await AsyncStorage.removeItem("cart_id");
+        // Redirecting to the home screen
+        Actions.push("products");
+      });
   };
 
   // Calling the API when user presses the "Place Order" button
@@ -94,9 +110,7 @@ export default function Checkout({ cart }) {
 
   const InitializePaymentSessions = async () => {
     // Getting cart id from async storage
-
     let cart_id = await AsyncStorage.getItem("cart_id");
-
     // Intializing payment session
     axios
       .post(`${baseURL}/store/carts/${cart_id}/payment-sessions`)
