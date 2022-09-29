@@ -33,7 +33,10 @@ export default function Checkout({ cart }) {
   };
 
   const handlePayment = async () => {
-    const clientSecret = paymentSession.client_secret;
+    // Getting client secret from the payment session state
+    const clientSecret = paymentSession.data
+      ? paymentSession.data.client_secret
+      : paymentSession.client_secret;
 
     const billingDetails = {
       email: shippingAddress.email,
@@ -53,9 +56,9 @@ export default function Checkout({ cart }) {
     }
     if (paymentIntent) {
       alert("Payment successful");
+      // Calling the complete cart function to empty the cart and redirect to the home screen
+      completeCart();
     }
-    // Calling the complete cart function to empty the cart and redirect to the home screen
-    completeCart();
   };
 
   const completeCart = async () => {
