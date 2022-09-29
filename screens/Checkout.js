@@ -86,8 +86,6 @@ export default function Checkout({ cart }) {
     axios
       .get(`${baseURL}/store/shipping-options/${cart_id}`)
       .then(({ data }) => {
-        // Set shipping options to state
-        console.log(data);
         setShippingOptions(data.shipping_options);
         // Initializing payment session
         InitializePaymentSessions();
@@ -103,8 +101,14 @@ export default function Checkout({ cart }) {
     axios
       .post(`${baseURL}/store/carts/${cart_id}/payment-sessions`)
       .then(({ data }) => {
-        console.log("session", data.cart.payment_sessions[0]);
-        setPaymentSession(data.cart.payment_sessions[0]);
+        axios
+          .post(`${baseURL}/store/carts/${cart_id}/payment-session`, {
+            provider_id: "stripe",
+          })
+          .then(({ data }) => {
+            console.log("data =>", data.cart.payment_session);
+            setPaymentSession(data.cart.payment_session);
+          });
       });
   };
 
