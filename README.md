@@ -1,4 +1,5 @@
 
+
 ## React Native Medusa
 ![Medusa Hackathon 2022](https://i.ibb.co/nPs84pQ/cover.png)
 
@@ -22,7 +23,10 @@ An open source ecommerce mobile application built using Medusa and React Native 
 Before you start with the tutorial make sure you have
 
 - [Node.js](https://nodejs.org/en/) v14 or greater installed on your machine
+- [Expo CLI](https://expo.dev/) 
+- [Medusa server](https://docs.medusajs.com/quickstart/quick-start/) v14 or greater installed on your machine
 - Stripe account
+- [Stripe plugin](https://docs.medusajs.com/add-plugins/stripe/) is required on the Medusa server
 
 ### Install Project
 
@@ -38,17 +42,9 @@ git clone https://github.com/suhailkakar/react-native-medusajs
 cd react-native-medusajs
 npm install
 ```
-3. Navigate back to the root folder and set up Medusa server
-
-```bash
-cd
-npm install -g @medusajs/medusa-cli
-medusa new my-medusa-store --seed
+4.  Start the app
 ```
-4.  Change directory and start Medusa server
-```
-cd my-medusa-store
-npm start
+expo start
 ```
 
 ## Resources
